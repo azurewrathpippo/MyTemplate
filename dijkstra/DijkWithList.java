@@ -92,4 +92,13 @@ class GraphNode
 		this.index = index;
 		adj = new HashMap<>();
 	}
+
+	private void addEdge(int index, int weight)
+	{
+		if (adj.containsKey(index) && adj.get(index) <= weight)
+		{
+			return;
+		}
+		adj.put(index, weight);
+	}
 }
