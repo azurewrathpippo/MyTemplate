@@ -9,29 +9,38 @@ public class DijkWithList
 	public static final long LongInf = Long.MAX_VALUE / 2 - 2;
 	public static final int IntegerInf = Integer.MAX_VALUE / 2 - 2;
 
-	private static void initial(int[][] graph, int s, long dist[])
+	private static void initial(GraphNode nodes[], int s, long dist[])
 	{
-		for (int i = 0; i < graph.length; ++i)
+		for (int i = 0; i < nodes.length; ++i)
 		{
 			dist[i] = LongInf;
 		}
 		dist[s] = 0;
 	}
 
-	private static boolean relax(int u, int v, int[][] graph, long dist[])
+	private static int w(GraphNode nodes[], int u, int v)
 	{
-		if (dist[v] > dist[u] + graph[u][v])
+		if (nodes[u].adj.containsKey(v))
 		{
-			dist[v] = dist[u] + graph[u][v];
+			return nodes[u].adj.get(v);
+		}
+		return IntegerInf;
+	}
+
+	private static boolean relax(int u, int v, GraphNode nodes[], long dist[])
+	{
+		if (dist[v] > dist[u] + w(nodes, u, v))
+		{
+			dist[v] = dist[u] + w(nodes, u, v);
 			return true;
 		}
 		return false;
 	}
 
-	public static long dijkstra(int s, int t, int[][] graph, HashMap<Integer, HashSet<Integer>> adj)
+	public static long dijkstra(int s, int t, GraphNode nodes[])
 	{
-		long dist[] = new long[graph.length];
-		initial(graph, s, dist);
+		long dist[] = new long[nodes.length];
+		initial(nodes, s, dist);
 		PriorityQueue<long[]> Q = new PriorityQueue<>(new Comparator<long[]>()
 		{
 			@Override
@@ -61,15 +70,26 @@ public class DijkWithList
 			{
 				return pair[1];
 			}
-			HashSet<Integer> adjSet = adj.get(u);
-			for (int v : adjSet)
+			for (int v : nodes[u].adj.keySet())
 			{
-				if (relax(u, v, graph, dist))
+				if (relax(u, v, nodes, dist))
 				{
 					Q.add(new long[] { v, dist[v] });
 				}
 			}
 		}
 		return -1;
+	}
+}
+
+class GraphNode
+{
+	public int index;
+	public HashMap<Integer, Integer> adj;
+
+	public GraphNode(int index)
+	{
+		this.index = index;
+		adj = new HashMap<>();
 	}
 }
